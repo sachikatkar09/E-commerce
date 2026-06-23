@@ -18,23 +18,35 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-brand">
         <Link to="/">
-          <img src="/ShopNestLogo.png" alt="ShopNest" style={{ height: '36px', width: '36px', borderRadius: '8px', objectFit: 'cover', filter: 'drop-shadow(0 2px 8px rgba(249, 115, 22, 0.35))' }} />
-          ShopNest
+          <img src="/ShopNestLogo.png" alt="ShopNest" />
+          <span>ShopNest</span>
         </Link>
       </div>
+
       <ul className="navbar-links">
+        <li><Link to="/">Home</Link></li>
         <li><Link to="/shop">Shop</Link></li>
-        <li><Link to="/cart">Cart ({cartItems.length})</Link></li>
+        <li><Link to="/shop">Categories</Link></li>
+        <li><Link to="/shop">Deals</Link></li>
+        <li><Link to="/about">About Us</Link></li>
+      </ul>
+
+      <div className="navbar-actions">
+        <button type="button" className="icon-button" aria-label="Search">🔍</button>
+        <Link to="/cart" className="icon-button cart-button" aria-label="Cart">
+          🛒
+          <span className="cart-count">{cartItems.length}</span>
+        </Link>
         {user ? (
           <>
-            <li><Link to="/profile">Hi, {user.name}</Link></li>
-            {user.role === 'admin' && <li><Link to="/admin">Admin</Link></li>}
-            <li><button onClick={handleLogout} className="btn-logout">Logout</button></li>
+            <Link to="/profile" className="profile-link">Hi, {user.name}</Link>
+            {user.role === 'admin' && <Link to="/admin" className="profile-link">Admin</Link>}
+            <button onClick={handleLogout} className="btn-logout">Logout</button>
           </>
         ) : (
-          <li><Link to="/login">Login</Link></li>
+          <Link to="/login" className="btn-login">Login</Link>
         )}
-      </ul>
+      </div>
     </nav>
   );
 };

@@ -91,6 +91,56 @@
   gap: 14px;
 }
 
+.navbar-search-wrapper {
+  position: relative;
+}
+
+.navbar-search-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: min(380px, calc(100vw - 32px));
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 0.24s ease, transform 0.24s ease, visibility 0.24s ease;
+  background: rgba(11, 16, 35, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  padding: 10px;
+  box-shadow: 0 32px 68px rgba(0, 0, 0, 0.32);
+  z-index: 1001;
+}
+
+.navbar-search-panel.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.navbar-search-input {
+  width: 100%;
+  min-width: 240px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #f8fafc;
+  font-size: 0.95rem;
+  padding: 14px 16px;
+  outline: none;
+  transition: border-color 0.24s ease, box-shadow 0.24s ease, background 0.24s ease;
+}
+
+.navbar-search-input::placeholder {
+  color: rgba(248, 250, 252, 0.6);
+}
+
+.navbar-search-input:focus {
+  border-color: rgba(255, 138, 0, 0.55);
+  box-shadow: 0 0 0 4px rgba(255, 138, 0, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .icon-button,
 .cart-button {
   position: relative;

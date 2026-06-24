@@ -1,18 +1,61 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { useSelector } from 'react-redux';
+import { useSearch } from '../context/SearchContext';
 import '../styles/navbar.css';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const cartItems = useSelector((state) => state.cart.cartItems);
+  const { query, setQuery } = useSearch();
+  const [openSearch, setOpenSearch] = useState(false);
+  const searchContainerRef = useRef(null);
+  const searchInputRef = useRef(null);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
+
+  const toggleSearch = () => {
+    setOpenSearch((prev) => !prev);
+  };
+
+  const closeSearch = () => {
+    setOpenSearch(false);
+  };
+
+  useEffect(() => {
+    if (!openSearch) return undefined;
+
+    const handleClickOutside = (event) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        closeSearch();
+      }
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        closeSearch();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [openSearch]);
+
+  useEffect(() => {
+    if (openSearch && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [openSearch]);
 
   return (
     <nav className="navbar">
@@ -32,7 +75,30 @@ const Navbar = () => {
       </ul>
 
       <div className="navbar-actions">
-        <button type="button" className="icon-button" aria-label="Search">🔍</button>
+        <div className="navbar-search-wrapper" ref={searchContainerRef}>
+          <button
+            type="button"
+            className="icon-button"
+            aria-label="Search"
+            aria-expanded={openSearch}
+            onClick={toggleSearch}
+          >
+            🔍
+          </button>
+
+          <div className={`navbar-search-panel ${openSearch ? 'open' : ''}`}>
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search products..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="navbar-search-input"
+              aria-label="Search products"
+            />
+          </div>
+        </div>
+
         <Link to="/cart" className="icon-button cart-button" aria-label="Cart">
           🛒
           <span className="cart-count">{cartItems.length}</span>

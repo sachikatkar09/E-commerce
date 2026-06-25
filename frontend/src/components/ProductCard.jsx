@@ -1,13 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useWishlist } from '../context/WishlistContext';
 import '../styles/product.css';
 
 const ProductCard = ({ product }) => {
+  const { toggleWishlist, isWishlisted } = useWishlist();
+  const wishlisted = isWishlisted(product._id);
+
   return (
     <div className="product-card">
       <div className="card-top">
         <span className="product-badge">{product.category || 'Popular'}</span>
-        <button type="button" className="favorite-btn">♡</button>
+        <button
+          type="button"
+          className={`favorite-btn ${wishlisted ? 'favorite-active' : ''}`}
+          onClick={() => toggleWishlist(product)}
+          aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+        >
+          {wishlisted ? '♥' : '♡'}
+        </button>
       </div>
       <img src={product.imageUrl} alt={product.name} className="product-image" />
       <div className="product-info">

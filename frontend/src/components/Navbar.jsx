@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { useWishlist } from '../context/WishlistContext';
 import { useSelector } from 'react-redux';
 import { useSearch } from '../context/SearchContext';
 import '../styles/navbar.css';
@@ -8,6 +9,7 @@ import '../styles/navbar.css';
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const cartItems = useSelector((state) => state.cart.cartItems);
+  const { wishlistCount } = useWishlist();
   const { query, setQuery } = useSearch();
   const [openSearch, setOpenSearch] = useState(false);
   const searchContainerRef = useRef(null);
@@ -99,6 +101,10 @@ const Navbar = () => {
           </div>
         </div>
 
+        <Link to="/wishlist" className="icon-button cart-button" aria-label="Wishlist">
+          ❤️
+          <span className="cart-count">{wishlistCount}</span>
+        </Link>
         <Link to="/cart" className="icon-button cart-button" aria-label="Cart">
           🛒
           <span className="cart-count">{cartItems.length}</span>

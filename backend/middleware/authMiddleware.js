@@ -9,13 +9,16 @@ const protect = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.user = await User.findById(decoded.id).select('-password');
       next();
+      return;
     } catch (error) {
-      res.status(401).json({ message: 'Not authorized, token failed' });
+      console.error('[protect middleware] Token verification failed:', error.message);
+      return res.status(401).json({ message: 'Not authorized, token failed' });
     }
   }
 
   if (!token) {
-    res.status(401).json({ message: 'Not authorized, no token' });
+    console.warn('[protect middleware] No token provided');
+    return res.status(401).json({ message: 'Not authorized, no token' });
   }
 };
 
@@ -27,6 +30,7 @@ const optionalProtect = async (req, res, next) => {
       req.user = await User.findById(decoded.id).select('-password');
     }
   } catch (error) {
+    console.error('[optionalProtect middleware] Token verification failed:', error.message);
     req.user = null;
   }
   next();

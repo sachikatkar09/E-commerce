@@ -71,8 +71,8 @@ const Navbar = () => {
       <ul className="navbar-links">
         <li><Link to="/">Home</Link></li>
         <li><Link to="/shop">Shop</Link></li>
-        <li><Link to="/shop">Categories</Link></li>
-        <li><Link to="/shop">Deals</Link></li>
+        <li><Link to="/categories">Categories</Link></li>
+        <li><Link to="/deals">Deals</Link></li>
         <li><Link to="/about">About Us</Link></li>
       </ul>
 

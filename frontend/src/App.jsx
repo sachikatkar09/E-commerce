@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ChatBot from './components/ai/ChatBot';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
@@ -27,7 +28,7 @@ import { SearchProvider } from './context/SearchContext';
 
 function App() {
   return (
-    <Router>
+    <Router future={{ v7_relativeSplatPath: true }}>
       <SearchProvider>
         <Navbar />
         <div className="main-content">
@@ -57,6 +58,7 @@ function App() {
           </Routes>
         </div>
         <Footer />
+        <ChatBot />
       </SearchProvider>
     </Router>
   );

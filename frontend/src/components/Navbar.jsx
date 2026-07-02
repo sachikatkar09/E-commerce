@@ -95,6 +95,12 @@ const Navbar = () => {
               placeholder="Search products..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && query.trim()) {
+                  navigate('/shop');
+                  closeSearch();
+                }
+              }}
               className="navbar-search-input"
               aria-label="Search products"
             />

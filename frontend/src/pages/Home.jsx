@@ -28,7 +28,7 @@ const Home = () => {
         <div className="hero-copy">
           <span className="hero-pill">Best Deals Online</span>
           <h1>
-            Welcome to <span>ShopNest</span>
+            Welcome to <span>NexCart</span>
           </h1>
           <p>Discover the best products at unbeatable prices.</p>
           <div className="hero-actions">

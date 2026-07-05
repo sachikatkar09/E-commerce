@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 const WishlistContext = createContext(null);
-const WISHLIST_STORAGE_KEY = 'shopnestWishlist';
+const WISHLIST_STORAGE_KEY = 'nexcartWishlist';
 
 export const WishlistProvider = ({ children }) => {
   const [wishlistItems, setWishlistItems] = useState(() => {

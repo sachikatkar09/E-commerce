@@ -7,7 +7,7 @@ dotenv.config();
 
 const runDiagnostics = async () => {
   try {
-    console.log('\n========== SHOPNEST BACKEND DIAGNOSTICS ==========\n');
+    console.log('\n========== NEXCART BACKEND DIAGNOSTICS ==========\n');
 
     // Test 1: Database Connection
     console.log('[TEST 1] Checking MongoDB Connection...');

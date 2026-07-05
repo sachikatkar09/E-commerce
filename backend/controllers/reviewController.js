@@ -10,7 +10,7 @@ const uploadFilesToCloudinary = async (files) => {
   const images = [];
   for (const file of files) {
     const result = await cloudinary.uploader.upload(file.path, {
-      folder: 'shopnest/reviews',
+      folder: 'nexcart/reviews',
       resource_type: 'image'
     });
     images.push(result.secure_url);

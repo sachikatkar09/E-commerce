@@ -19,14 +19,14 @@ const getProductsContext = async () => {
 };
 
 /**
- * Build the system prompt that instructs Gemini how to behave as a ShopNest assistant.
+ * Build the system prompt that instructs Gemini how to behave as a NexCart assistant.
  */
-const buildSystemPrompt = (productsContext) => `You are ShopNest AI — a friendly, expert shopping assistant for the ShopNest e-commerce store.
+const buildSystemPrompt = (productsContext) => `You are NexCart AI — a friendly, expert shopping assistant for the NexCart e-commerce store.
 
 ## Your Role
-Help users discover and choose products from the ShopNest catalog. Be conversational, helpful, and concise.
+Help users discover and choose products from the NexCart catalog. Be conversational, helpful, and concise.
 
-## ShopNest Product Catalog
+## NexCart Product Catalog
 Below is the FULL list of products currently available. You MUST only recommend products from this list. Never invent or hallucinate products.
 
 ${productsContext}
@@ -70,7 +70,7 @@ const callGemini = async (systemPrompt, userMessage) => {
     body: JSON.stringify({
       contents: [
         { role: 'user', parts: [{ text: systemPrompt }] },
-        { role: 'model', parts: [{ text: 'Understood. I am ShopNest AI, ready to help users find products from the catalog.' }] },
+        { role: 'model', parts: [{ text: 'Understood. I am NexCart AI, ready to help users find products from the catalog.' }] },
         { role: 'user', parts: [{ text: userMessage }] }
       ],
       generationConfig: {

@@ -109,7 +109,7 @@ const ChatBot = () => {
             <div className="ai-header-left">
               <div className="ai-avatar">🤖</div>
               <div className="ai-header-info">
-                <h4>ShopNest AI</h4>
+                <h4>NexCart AI</h4>
                 <span>{isLoading ? 'Thinking...' : 'Online'}</span>
               </div>
             </div>
@@ -124,7 +124,7 @@ const ChatBot = () => {
             {messages.length === 0 ? (
               <div className="ai-welcome">
                 <div className="ai-welcome-icon">🤖</div>
-                <h4>Hi! I'm ShopNest AI</h4>
+                <h4>Hi! I'm NexCart AI</h4>
                 <p>Your personal shopping assistant. Ask me anything about our products!</p>
                 <div className="ai-welcome-prompts">
                   {WELCOME_PROMPTS.map((p, i) => (

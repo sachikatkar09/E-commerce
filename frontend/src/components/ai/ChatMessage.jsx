@@ -66,7 +66,7 @@ const ChatMessage = ({ message }) => {
                   src={product.imageUrl}
                   alt={product.name}
                   className="ai-product-img"
-                  onError={(e) => { e.target.src = 'https://via.placeholder.com/64?text=ShopNest'; }}
+                  onError={(e) => { e.target.src = 'https://via.placeholder.com/64?text=NexCart'; }}
                 />
                 <div className="ai-product-info">
                   <div className="ai-product-name" title={product.name}>{product.name}</div>

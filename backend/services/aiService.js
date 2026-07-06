@@ -1,6 +1,7 @@
-const Product = require('../models/Product');
+const Product = require("../models/Product");
 
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const GEMINI_API_URL =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
 /**
  * Fetch all products from MongoDB and format them for the AI context.
@@ -8,25 +9,33 @@ const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/
  */
 const getProductsContext = async () => {
   const products = await Product.find({})
-    .select('name description price category stock imageUrl ratings numReviews discountPercentage discountPrice')
+    .select(
+      "name description price category stock imageUrl ratings numReviews discountPercentage discountPrice",
+    )
     .lean();
 
-  if (!products.length) return 'No products currently available in the catalog.';
+  if (!products.length)
+    return "No products currently available in the catalog.";
 
-  return products.map((p, i) =>
-    `[${i + 1}] ${p.name} | Category: ${p.category} | Price: ₹${p.price}${p.discountPercentage > 0 ? ` (${p.discountPercentage}% off, now ₹${p.discountPrice})` : ''} | Rating: ${p.ratings?.toFixed(1) || '0.0'} (${p.numReviews || 0} reviews) | In Stock: ${p.stock > 0 ? 'Yes' : 'No'} | ID: ${p._id}`
-  ).join('\n');
+  return products
+    .map(
+      (p, i) =>
+        `[${i + 1}] ${p.name} | Category: ${p.category} | Price: ₹${p.price}${p.discountPercentage > 0 ? ` (${p.discountPercentage}% off, now ₹${p.discountPrice})` : ""} | Rating: ${p.ratings?.toFixed(1) || "0.0"} (${p.numReviews || 0} reviews) | In Stock: ${p.stock > 0 ? "Yes" : "No"} | ID: ${p._id}`,
+    )
+    .join("\n");
 };
 
 /**
- * Build the system prompt that instructs Gemini how to behave as a NexCart assistant.
+ * Build the system prompt that instructs Gemini how to behave as a ShopNest assistant.
  */
-const buildSystemPrompt = (productsContext) => `You are NexCart AI — a friendly, expert shopping assistant for the NexCart e-commerce store.
+const buildSystemPrompt = (
+  productsContext,
+) => `You are ShopNest AI — a friendly, expert shopping assistant for the ShopNest e-commerce store.
 
 ## Your Role
-Help users discover and choose products from the NexCart catalog. Be conversational, helpful, and concise.
+Help users discover and choose products from the ShopNest catalog. Be conversational, helpful, and concise.
 
-## NexCart Product Catalog
+## ShopNest Product Catalog
 Below is the FULL list of products currently available. You MUST only recommend products from this list. Never invent or hallucinate products.
 
 ${productsContext}
@@ -61,33 +70,40 @@ Then append:
 const callGemini = async (systemPrompt, userMessage) => {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    throw new Error('GEMINI_API_KEY is not configured');
+    throw new Error("GEMINI_API_KEY is not configured");
   }
 
   const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       contents: [
-        { role: 'user', parts: [{ text: systemPrompt }] },
-        { role: 'model', parts: [{ text: 'Understood. I am NexCart AI, ready to help users find products from the catalog.' }] },
-        { role: 'user', parts: [{ text: userMessage }] }
+        { role: "user", parts: [{ text: systemPrompt }] },
+        {
+          role: "model",
+          parts: [
+            {
+              text: "Understood. I am NexCart AI, ready to help users find products from the catalog.",
+            },
+          ],
+        },
+        { role: "user", parts: [{ text: userMessage }] },
       ],
       generationConfig: {
         temperature: 0.7,
-        maxOutputTokens: 1024
-      }
-    })
+        maxOutputTokens: 1024,
+      },
+    }),
   });
 
   if (!response.ok) {
     const errBody = await response.text();
-    console.error('[Gemini API] Error response:', response.status, errBody);
+    console.error("[Gemini API] Error response:", response.status, errBody);
     throw new Error(`Gemini API error: ${response.status}`);
   }
 
   const data = await response.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 };
 
 /**
@@ -99,7 +115,7 @@ const parseProductIds = (text) => {
   if (!match) return [];
   try {
     const ids = JSON.parse(match[1]);
-    return Array.isArray(ids) ? ids.filter(id => typeof id === 'string') : [];
+    return Array.isArray(ids) ? ids.filter((id) => typeof id === "string") : [];
   } catch {
     return [];
   }
@@ -122,19 +138,23 @@ const getAIResponse = async (userMessage) => {
   const productIds = parseProductIds(rawResponse);
 
   // 5. Clean response text (remove the code block from displayed text)
-  const cleanResponse = rawResponse.replace(/```product_ids\s*\n[\s\S]*?\n```/, '').trim();
+  const cleanResponse = rawResponse
+    .replace(/```product_ids\s*\n[\s\S]*?\n```/, "")
+    .trim();
 
   // 6. Fetch full product objects for the matched IDs
   let products = [];
   if (productIds.length > 0) {
     products = await Product.find({ _id: { $in: productIds } })
-      .select('name description price category stock imageUrl ratings numReviews discountPercentage discountPrice')
+      .select(
+        "name description price category stock imageUrl ratings numReviews discountPercentage discountPrice",
+      )
       .lean();
   }
 
   return {
-    reply: cleanResponse || 'Here are some products you might like!',
-    products
+    reply: cleanResponse || "Here are some products you might like!",
+    products,
   };
 };
 

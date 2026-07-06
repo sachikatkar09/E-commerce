@@ -92,13 +92,13 @@ const About = () => {
         <div className="about-hero-content">
           <span className="about-pill">About Us</span>
           <h1>
-            Welcome to <span>NexCart</span>
+            Welcome to <span>ShopNest</span>
           </h1>
           <p className="about-hero-subtitle">
             Your trusted destination for quality products at affordable prices.
           </p>
           <p className="about-hero-desc">
-            NexCart is built to provide a seamless online shopping experience with carefully
+            ShopNest is built to provide a seamless online shopping experience with carefully
             selected products across multiple categories. We bring you the best deals from
             top brands, all in one place — so you can shop with confidence and ease.
           </p>
@@ -116,7 +116,7 @@ const About = () => {
           <h2>Making Online Shopping <span>Simple, Secure & Enjoyable</span></h2>
           <p>
             We believe everyone deserves access to quality products without the hassle.
-            NexCart is committed to offering competitive prices, verified products,
+            ShopNest is committed to offering competitive prices, verified products,
             and fast delivery — all backed by a secure platform you can trust.
           </p>
         </div>
@@ -126,7 +126,7 @@ const About = () => {
       <section className="about-section">
         <div className="about-section-header">
           <span className="about-section-tag">Why Choose Us</span>
-          <h2>Why NexCart?</h2>
+          <h2>Why ShopNest?</h2>
           <p>We go the extra mile to make your shopping experience exceptional.</p>
         </div>
         <div className="about-grid about-grid-3">

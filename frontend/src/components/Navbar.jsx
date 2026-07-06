@@ -66,8 +66,8 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-brand">
         <Link to="/">
-          <img src="/ShopNestLogo.png" alt="NexCart" />
-          <span>NexCart</span>
+          <img src="/ShopNestLogo.png" alt="ShopNest" />
+          <span>ShopNest</span>
         </Link>
       </div>
 

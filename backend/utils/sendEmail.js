@@ -1,9 +1,9 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 const sendEmail = async ({ email, subject, message }) => {
   try {
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_PASS, // App Password mapping
@@ -11,7 +11,7 @@ const sendEmail = async ({ email, subject, message }) => {
     });
 
     const mailOptions = {
-      from: `"NexCart Support" <${process.env.GMAIL_USER}>`,
+      from: `"ShopNest Support" <${process.env.GMAIL_USER}>`,
       to: email,
       subject: subject,
       html: message,

@@ -36,7 +36,6 @@ app.use("/api/orders", require("./routes/orderRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
 app.use("/api/analytics", require("./routes/analyticsRoutes"));
-app.use("/api/ai", require("./routes/aiRoutes"));
 
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {

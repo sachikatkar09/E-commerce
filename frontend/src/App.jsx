@@ -21,11 +21,13 @@ import EditProduct from './admin/EditProduct';
 import AdminOrders from './admin/AdminOrders';
 import AdminUsers from './admin/AdminUsers';
 import Wishlist from './pages/Wishlist';
+import Categories from './pages/Categories';
+import Deals from './pages/Deals';
 import { SearchProvider } from './context/SearchContext';
 
 function App() {
   return (
-    <Router>
+    <Router future={{ v7_relativeSplatPath: true }}>
       <SearchProvider>
         <Navbar />
         <div className="main-content">
@@ -33,6 +35,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/categories/:category" element={<Categories />} />
+            <Route path="/deals" element={<Deals />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />

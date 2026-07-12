@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import { useWishlist } from '../context/WishlistContext';
-import { useSelector } from 'react-redux';
-import { useSearch } from '../context/SearchContext';
-import '../styles/navbar.css';
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import { useWishlist } from "../context/WishlistContext";
+import { useSelector } from "react-redux";
+import { useSearch } from "../context/SearchContext";
+import "../styles/navbar.css";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -18,7 +18,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   const toggleSearch = () => {
@@ -33,23 +33,26 @@ const Navbar = () => {
     if (!openSearch) return undefined;
 
     const handleClickOutside = (event) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target)
+      ) {
         closeSearch();
       }
     };
 
     const handleKeyDown = (event) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         closeSearch();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [openSearch]);
 
@@ -69,11 +72,21 @@ const Navbar = () => {
       </div>
 
       <ul className="navbar-links">
-        <li><Link to="/">Home</Link></li>
-        <li><Link to="/shop">Shop</Link></li>
-        <li><Link to="/shop">Categories</Link></li>
-        <li><Link to="/shop">Deals</Link></li>
-        <li><Link to="/about">About Us</Link></li>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <Link to="/shop">Shop</Link>
+        </li>
+        <li>
+          <Link to="/categories">Categories</Link>
+        </li>
+        <li>
+          <Link to="/deals">Deals</Link>
+        </li>
+        <li>
+          <Link to="/about">About Us</Link>
+        </li>
       </ul>
 
       <div className="navbar-actions">
@@ -88,20 +101,30 @@ const Navbar = () => {
             🔍
           </button>
 
-          <div className={`navbar-search-panel ${openSearch ? 'open' : ''}`}>
+          <div className={`navbar-search-panel ${openSearch ? "open" : ""}`}>
             <input
               ref={searchInputRef}
               type="text"
               placeholder="Search products..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && query.trim()) {
+                  navigate("/shop");
+                  closeSearch();
+                }
+              }}
               className="navbar-search-input"
               aria-label="Search products"
             />
           </div>
         </div>
 
-        <Link to="/wishlist" className="icon-button cart-button" aria-label="Wishlist">
+        <Link
+          to="/wishlist"
+          className="icon-button cart-button"
+          aria-label="Wishlist"
+        >
           ❤️
           <span className="cart-count">{wishlistCount}</span>
         </Link>
@@ -111,12 +134,22 @@ const Navbar = () => {
         </Link>
         {user ? (
           <>
-            <Link to="/profile" className="profile-link">Hi, {user.name}</Link>
-            {user.role === 'admin' && <Link to="/admin" className="profile-link">Admin</Link>}
-            <button onClick={handleLogout} className="btn-logout">Logout</button>
+            <Link to="/profile" className="profile-link">
+              Hi, {user.name}
+            </Link>
+            {user.role === "admin" && (
+              <Link to="/admin" className="profile-link">
+                Admin
+              </Link>
+            )}
+            <button onClick={handleLogout} className="btn-logout">
+              Logout
+            </button>
           </>
         ) : (
-          <Link to="/login" className="btn-login">Login</Link>
+          <Link to="/login" className="btn-login">
+            Login
+          </Link>
         )}
       </div>
     </nav>

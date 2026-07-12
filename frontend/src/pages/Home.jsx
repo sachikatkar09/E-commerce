@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import ProductCard from '../components/ProductCard';
-import '../styles/product.css';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import ProductCard from "../components/ProductCard";
+import "../styles/product.css";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -10,7 +10,7 @@ const Home = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch('/api/products');
+        const res = await fetch("/api/products");
         const data = await res.json();
         setProducts(data.slice(0, 4)); // Featured products
       } catch (error) {
@@ -32,8 +32,12 @@ const Home = () => {
           </h1>
           <p>Discover the best products at unbeatable prices.</p>
           <div className="hero-actions">
-            <Link to="/shop" className="btn btn-primary">Shop Now</Link>
-            <Link to="/shop" className="btn btn-secondary">Explore Deals</Link>
+            <Link to="/shop" className="btn btn-primary">
+              Shop Now
+            </Link>
+            <Link to="/shop" className="btn btn-secondary">
+              Explore Deals
+            </Link>
           </div>
           <div className="hero-features">
             <div className="hero-feature">
@@ -71,7 +75,9 @@ const Home = () => {
             <div className="hero-product-details">
               <span>Premium Electronics</span>
               <h3>Wireless Noise-Cancelling Headphones</h3>
-              <p className="hero-product-price">₹299.99 <span>₹399.99</span></p>
+              <p className="hero-product-price">
+                ₹299.99 <span>₹399.99</span>
+              </p>
             </div>
           </div>
         </div>
@@ -79,7 +85,9 @@ const Home = () => {
 
       <div className="featured-header">
         <h2>Featured Products</h2>
-        <Link to="/shop" className="view-all">View All</Link>
+        <Link to="/shop" className="view-all">
+          View All
+        </Link>
       </div>
 
       {loading ? (

@@ -50,27 +50,6 @@ npm run seed
 Run this single command at the root to bind the Backend (Port 5000) and Frontend (Port 3000) natively:
 ```bash
 npm run dev
-```
 
----
 
-## ☁️ 1-Click Deployment (Render Free-Tier Optimized)
 
-The server codebase features a seamless fallback mechanic leveraging Node `process.env.NODE_ENV === "production"`. When deployed to Render as a singular instance, the Express backend hosts and correctly resolves static routes to `/frontend/build` rendering the whole platform completely free on 1 Node server.
-
-1. Publish this repo onto **GitHub**.
-2. Go to [Render Dashboard](https://dashboard.render.com).
-3. Connect Repo -> Create a **Web Service**.
-4. Configure Build Command:
-   `npm run render-build` 
-   *(This cleanly installs API + UI node_modules then generates `react-scripts build`)*
-5. Configure Start Command:
-   `npm start`
-6. Open **Advanced > Environment Variables** and map your `.env` fields heavily defining `NODE_ENV = production`.
-7. Hit **Deploy**. The robust path resolving inside `/backend/server.js` hosts it fluidly!
-
----
-
-## 📄 Postman Documentations
-This repository includes a fully-scaffolded API testing toolkit: **`ShopNest_Postman_Collection.json`**. 
-Simply Import this file directly into the local Postman IDE. It features variables like `{{token}}` properly mapped to effortlessly check protected admin/user/order payloads. Happy coding!

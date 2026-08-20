@@ -2,13 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useWishlist } from '../context/WishlistContext';
 import '../styles/product.css';
+import './ProductCardCompact.css';
 
 const ProductCard = ({ product }) => {
   const { toggleWishlist, isWishlisted } = useWishlist();
   const wishlisted = isWishlisted(product._id);
 
   return (
-    <div className="product-card">
+    <div className="product-card compact">
       <div className="card-top">
         <span className="product-badge">{product.category || 'Popular'}</span>
         <button
@@ -23,7 +24,7 @@ const ProductCard = ({ product }) => {
       <img src={product.imageUrl} alt={product.name} className="product-image" />
       <div className="product-info">
         <div>
-          <h3>{product.name}</h3>
+          <h3 className="truncate">{product.name}</h3>
           <div className="card-meta">
             <span>{product.ratings?.toFixed(1) || '0.0'} ★</span>
             <span>({product.numReviews || 0})</span>

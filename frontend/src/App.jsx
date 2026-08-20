@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -24,8 +24,16 @@ import Wishlist from './pages/Wishlist';
 import Categories from './pages/Categories';
 import Deals from './pages/Deals';
 import { SearchProvider } from './context/SearchContext';
+import ChatButton from './components/Chat/ChatButton';
+import ChatWindow from './components/Chat/ChatWindow';
 
 function App() {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const toggleChat = () => {
+    setIsChatOpen(!isChatOpen);
+  };
+
   return (
     <Router future={{ v7_relativeSplatPath: true }}>
       <SearchProvider>
@@ -57,6 +65,8 @@ function App() {
           </Routes>
         </div>
         <Footer />
+        <ChatButton onClick={toggleChat} />
+        <ChatWindow isOpen={isChatOpen} onClose={toggleChat} />
       </SearchProvider>
     </Router>
   );

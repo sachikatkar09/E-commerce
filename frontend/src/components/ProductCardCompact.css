@@ -1,0 +1,27 @@
+.product-card.compact {
+  width: 150px;
+  min-width: 150px;
+  font-size: 0.875rem;
+}
+
+.product-card.compact .product-image {
+  height: 100px;
+  object-fit: contain;
+}
+
+.product-card.compact h3 {
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-card.compact .price {
+  font-size: 0.875rem;
+  font-weight: bold;
+}
+
+.product-card.compact .btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}

@@ -3,12 +3,23 @@ import axios from 'axios';
 import ProductCard from './ProductCard';
 import '../styles/chatbot.css';
 
+const CHAT_HISTORY_KEY = 'chatHistory';
+const CONTEXT_KEY = 'chatContext';
+
 const Chatbot = ({ onClose }) => {
-  const [messages, setMessages] = useState([
-    { sender: 'ai', text: 'Hi! 👋 How can I help you find something today?' }
-  ]);
+  const [messages, setMessages] = useState(() => {
+    const savedHistory = localStorage.getItem(CHAT_HISTORY_KEY);
+    return savedHistory ? JSON.parse(savedHistory) : [
+      { sender: 'ai', text: 'Hi! 👋 How can I help you find something today?' }
+    ];
+  });
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [context, setContext] = useState(() => {
+    const savedContext = localStorage.getItem(CONTEXT_KEY);
+    return savedContext ? JSON.parse(savedContext) : { filters: {} };
+  });
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -23,14 +34,26 @@ const Chatbot = ({ onClose }) => {
     if (!input.trim()) return;
 
     const userMessage = { sender: 'user', text: input };
-    setMessages((prev) => [...prev, userMessage]);
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
+    localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(updatedMessages));
     setInput('');
     setIsLoading(true);
+    setRetryCount(0);
 
     try {
-      const response = await axios.post('/api/chat', { message: input });
+      const response = await axios.post('/api/chat', { message: input, context });
       const aiMessage = { sender: 'ai', text: response.data.message };
-      setMessages((prev) => [...prev, aiMessage]);
+      const newMessages = [...updatedMessages, aiMessage];
+      setMessages(newMessages);
+      localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(newMessages));
+      
+      // Update context with new filters
+      if (response.data.context) {
+        const newContext = { ...context, filters: response.data.context };
+        setContext(newContext);
+        localStorage.setItem(CONTEXT_KEY, JSON.stringify(newContext));
+      }
       
       if (response.data.products && response.data.products.length > 0) {
         const productsMessage = {
@@ -38,17 +61,41 @@ const Chatbot = ({ onClose }) => {
           products: response.data.products,
           text: response.data.message || 'Here are some products I found for you:'
         };
-        setMessages((prev) => [...prev, productsMessage]);
+        const finalMessages = [...newMessages, productsMessage];
+        setMessages(finalMessages);
+        localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(finalMessages));
       }
     } catch (error) {
-      const errorMessage = {
-        sender: 'ai',
-        text: 'Sorry, I encountered an error. Please try again.'
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      let errorMessage;
+      if (error.response?.data?.error === 'product_search_failed') {
+        errorMessage = {
+          sender: 'ai',
+          text: 'I couldn’t find matching products. Try adjusting your filters?'
+        };
+      } else if (retryCount < 2) {
+        setRetryCount(retryCount + 1);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await handleSend();
+        return;
+      } else {
+        errorMessage = {
+          sender: 'ai',
+          text: 'Sorry, I’m having trouble right now. Please try again later.'
+        };
+      }
+      const errorMessages = [...updatedMessages, errorMessage];
+      setMessages(errorMessages);
+      localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(errorMessages));
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const clearChatHistory = () => {
+    localStorage.removeItem(CHAT_HISTORY_KEY);
+    localStorage.removeItem(CONTEXT_KEY);
+    setMessages([{ sender: 'ai', text: 'Hi! 👋 How can I help you find something today?' }]);
+    setContext({ filters: {} });
   };
 
   const handleKeyPress = (e) => {

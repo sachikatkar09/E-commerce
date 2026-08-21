@@ -24,15 +24,12 @@ import Wishlist from './pages/Wishlist';
 import Categories from './pages/Categories';
 import Deals from './pages/Deals';
 import { SearchProvider } from './context/SearchContext';
-import ChatButton from './components/Chat/ChatButton';
-import ChatWindow from './components/Chat/ChatWindow';
+import Chatbot from './components/Chatbot';
+import ChatbotButton from './components/ChatbotButton';
+import './styles/chatbot.css';
 
 function App() {
-  const [isChatOpen, setIsChatOpen] = useState(false);
-
-  const toggleChat = () => {
-    setIsChatOpen(!isChatOpen);
-  };
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
   return (
     <Router future={{ v7_relativeSplatPath: true }}>
@@ -65,8 +62,11 @@ function App() {
           </Routes>
         </div>
         <Footer />
-        <ChatButton onClick={toggleChat} />
-        <ChatWindow isOpen={isChatOpen} onClose={toggleChat} />
+        {isChatbotOpen ? (
+          <Chatbot onClose={() => setIsChatbotOpen(false)} />
+        ) : (
+          <ChatbotButton onClick={() => setIsChatbotOpen(true)} />
+        )}
       </SearchProvider>
     </Router>
   );

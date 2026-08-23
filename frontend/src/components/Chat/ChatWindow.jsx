@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { FaCommentDots } from "react-icons/fa";
 import ProductCard from '../ProductCard';
 import '../../styles/chatbot.css';
 
@@ -21,13 +22,21 @@ const ChatWindow = ({ onClose, onSend }) => {
   return (
     <div className="chat-window">
       <div className="chat-header">
-        <h3>AI Shopping Assistant</h3>
+        <div>
+          <h3>Chat with us</h3>
+          <p className="chat-subtitle">AI Shopping Assistant</p>
+          <p className="chat-status">
+            <span className="status-indicator"></span>Online • Typically replies in a few seconds
+          </p>
+        </div>
         <button onClick={onClose} className="close-btn">×</button>
       </div>
       <div className="chat-messages">
         {onSend.messages?.map((msg, i) => (
           <div key={i} className={`message ${msg.sender}`}>
-            <p>{msg.text}</p>
+            <div className="message-content">
+              {msg.text}
+            </div>
             {msg.products?.map(product => (
               <ProductCard key={product._id} product={product} />
             ))}
@@ -35,15 +44,21 @@ const ChatWindow = ({ onClose, onSend }) => {
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <div className="chat-input">
+      <div className="chatbot-status">
+        <span className="status-indicator"></span>
+        Online • Typically replies in a few seconds
+      </div>
+      <div className="chatbot-input">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-          placeholder="Ask me about products..."
+          placeholder="Ask about products..."
         />
-        <button onClick={handleSend} className="send-btn">Send</button>
+        <button onClick={handleSend} className="send-btn">
+          <FiSend size={20} />
+        </button>
       </div>
     </div>
   );

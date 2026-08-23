@@ -207,57 +207,6 @@
   border-color: rgba(255, 193, 7, 0.6);
 }
 
-.chatbot-input {
-  display: flex;
-  padding: 16px 20px;
-  background: #111827;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  gap: 12px;
-}
-
-.chatbot-input input {
-  flex: 1;
-  padding: 12px 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  background: #1F2937;
-  color: #FFFFFF;
-  font-size: 14px;
-  outline: none;
-}
-
-.chatbot-input input::placeholder {
-  color: #9CA3AF;
-}
-
-.chatbot-input .send-button {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #FF9800, #FFC107);
-  border: none;
-  color: #111827;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
-}
-
-.chatbot-input .send-button:hover {
-  background: linear-gradient(135deg, #FFB300, #FFD54F);
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
-}
-
-.chatbot-input .send-button:disabled {
-  background: #4B5563;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;

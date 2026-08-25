@@ -898,36 +898,49 @@
 
 .button-container {
   display: flex;
-  gap: 12px;
+  align-items: center;
+  gap: 10px;
   width: 100%;
-  margin-top: 12px;
 }
 
-.btn {
+.action-btn {
   flex: 1;
-  height: 54px;
-  border-radius: 12px;
-  display: flex;
+  height: 44px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  font-weight: 700;
-  transition: all 0.3s ease;
+  gap: 8px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  padding: 0 16px;
 }
 
-.btn.add-to-cart {
+.action-btn.add-to-cart {
   background: #FFAA00;
   color: #111827;
+  border: none;
 }
 
-.btn.view-details {
-  background: #FF5C66;
-  color: #FFFFFF;
+.action-btn.view-details {
+  background: transparent;
+  color: #FF5C66;
+  border: 1px solid #FF5C66;
 }
 
-.btn:hover {
+.action-btn:hover {
   transform: translateY(-2px);
-  filter: brightness(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.action-btn.add-to-cart:hover {
+  background: #FFB31A;
+}
+
+.action-btn.view-details:hover {
+  background: rgba(255, 92, 102, 0.1);
 }
 
 .cart-btn {

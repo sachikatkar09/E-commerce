@@ -42,15 +42,17 @@ const ProductCard = ({ product }) => {
           <p className="product-price">₹{product.price}</p>
           {getAvailabilityBadge()}
           <div className="product-buttons">
-            <button className="product-btn add-to-cart">
-              <span className="btn-icon">🛒</span> Add to Cart
-            </button>
-            <Link
-              to={`/product/${product._id}`}
-              className="product-btn view-details"
-            >
-              View Details
-            </Link>
+            <div className="button-container">
+              <button className="action-btn add-to-cart">
+                <span className="btn-icon">🛒</span> Add to Cart
+              </button>
+              <Link
+                to={`/product/${product._id}`}
+                className="action-btn view-details"
+              >
+                View Details
+              </Link>
+            </div>
           </div>
         </div>
       </div>

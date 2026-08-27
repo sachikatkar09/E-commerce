@@ -6,8 +6,6 @@
   display: flex;
   flex-direction: column;
   height: 560px;
-  min-height: 560px;
-  max-height: 620px;
   border-radius: 20px;
   background: #111827;
   border: 1px solid rgba(255,255,255,0.10);
@@ -81,9 +79,9 @@
   padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
   flex: 1 1 auto;
   background: #111827;
+  justify-content: space-between;
 }
 
 .product-title {
@@ -96,22 +94,33 @@
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.4;
+  min-height: 56px;
+  margin: 0;
 }
 
-.card-meta {
+.rating-stock-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  width: 100%;
 }
 
-.rating {
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   color: #D1D5DB;
   font-size: 14px;
   font-weight: 500;
 }
 
-.star {
+.rating-star {
   color: #F59E0B;
+}
+
+.stock-container {
+  display: flex;
+  align-items: center;
 }
 
 .product-bottom {
@@ -119,7 +128,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  margin-top: auto;
+  margin-top: 8px;
 }
 
 .price {
@@ -136,13 +145,26 @@
   text-transform: uppercase;
 }
 
-.badge.in-stock {
+.product-stock-badge {
+  border-radius: 7px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.product-stock-badge.in-stock {
   background: #10B981;
   color: #FFFFFF;
 }
 
-.badge.low-stock {
+.product-stock-badge.low-stock {
   background: #F59E0B;
+  color: #FFFFFF;
+}
+
+.product-stock-badge.out-of-stock {
+  background: #EF4444;
   color: #FFFFFF;
 }
 

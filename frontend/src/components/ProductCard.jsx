@@ -30,29 +30,26 @@ const ProductCard = ({ product }) => {
           className="product-image"
         />
       </div>
-      <div className="product-details">
-        <div>
-          <h3 className="product-title">{product.name}</h3>
+      <div className="product-info">
+        <h3 className="product-title">{product.name}</h3>
+        <div className="product-rating-stock">
           <div className="product-rating">
-            <span className="rating-star">★</span>{" "}
-            {product.ratings?.toFixed(1) || "0.0"}
+            <span className="rating-star">★</span> {product.ratings?.toFixed(1) || "0.0"}
           </div>
-        </div>
-        <div className="product-actions">
-          <p className="product-price">₹{product.price}</p>
           {getAvailabilityBadge()}
-          <div className="product-buttons">
-            <div className="button-container">
-              <button className="action-btn add-to-cart">
-                <span className="btn-icon">🛒</span> Add to Cart
-              </button>
-              <Link
-                to={`/product/${product._id}`}
-                className="action-btn view-details"
-              >
-                View Details
-              </Link>
-            </div>
+        </div>
+        <div className="product-bottom">
+          <p className="product-price">₹{product.price}</p>
+          <div className="button-container">
+            <button className="action-btn add-to-cart">
+              <span className="btn-icon">🛒</span> Add to Cart
+            </button>
+            <Link
+              to={`/product/${product._id}`}
+              className="action-btn view-details"
+            >
+              View Details
+            </Link>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -24,8 +24,13 @@ import Wishlist from './pages/Wishlist';
 import Categories from './pages/Categories';
 import Deals from './pages/Deals';
 import { SearchProvider } from './context/SearchContext';
+import Chatbot from './components/Chatbot';
+import ChatbotButton from './components/ChatbotButton';
+import './styles/chatbot.css';
 
 function App() {
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+
   return (
     <Router future={{ v7_relativeSplatPath: true }}>
       <SearchProvider>
@@ -57,6 +62,11 @@ function App() {
           </Routes>
         </div>
         <Footer />
+        {isChatbotOpen ? (
+          <Chatbot onClose={() => setIsChatbotOpen(false)} />
+        ) : (
+          <ChatbotButton onClick={() => setIsChatbotOpen(true)} />
+        )}
       </SearchProvider>
     </Router>
   );

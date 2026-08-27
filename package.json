@@ -13,6 +13,7 @@
     "seed": "npm --prefix backend run seed"
   },
   "dependencies": {
-    "concurrently": "^8.2.1"
+    "concurrently": "^8.2.1",
+    "openai": "^7.5.0"
   }
 }

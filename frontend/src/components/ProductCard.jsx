@@ -1,37 +1,56 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useWishlist } from '../context/WishlistContext';
-import '../styles/product.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import "../styles/product.css";
 
 const ProductCard = ({ product }) => {
-  const { toggleWishlist, isWishlisted } = useWishlist();
-  const wishlisted = isWishlisted(product._id);
+  const getAvailabilityBadge = () => {
+    if (product.stock > 10)
+      return <span className="product-stock-badge in-stock">In Stock</span>;
+    if (product.stock > 0)
+      return <span className="product-stock-badge low-stock">Low Stock</span>;
+    return (
+      <span className="product-stock-badge out-of-stock">Out of Stock</span>
+    );
+  };
+
+  const getPopularBadge = () => {
+    if (product.ratings >= 4.5)
+      return <span className="product-popular-badge">Popular</span>;
+    return null;
+  };
 
   return (
     <div className="product-card">
-      <div className="card-top">
-        <span className="product-badge">{product.category || 'Popular'}</span>
-        <button
-          type="button"
-          className={`favorite-btn ${wishlisted ? 'favorite-active' : ''}`}
-          onClick={() => toggleWishlist(product)}
-          aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-        >
-          {wishlisted ? '♥' : '♡'}
-        </button>
+      <div className="product-image-container">
+        {getPopularBadge()}
+        <button className="product-wishlist-btn">♡</button>
+        <img
+          src={product.imageUrl}
+          alt={product.name}
+          className="product-image"
+        />
       </div>
-      <img src={product.imageUrl} alt={product.name} className="product-image" />
       <div className="product-info">
-        <div>
-          <h3>{product.name}</h3>
-          <div className="card-meta">
-            <span>{product.ratings?.toFixed(1) || '0.0'} ★</span>
-            <span>({product.numReviews || 0})</span>
+        <h3 className="product-title">{product.name}</h3>
+        <div className="product-rating-stock">
+          <div className="product-rating">
+            <span className="rating-star">★</span> {product.ratings?.toFixed(1) || "0.0"}
           </div>
+          {getAvailabilityBadge()}
         </div>
         <div className="product-bottom">
-          <p className="price">₹{product.price}</p>
-          <Link to={`/product/${product._id}`} className="btn btn-sm">View</Link>
+          <p className="product-price">₹{product.price}</p>
+          <div className="button-container">
+            <button className="action-btn add-to-cart">
+              <span className="btn-icon">🛒</span> Add to Cart
+            </button>
+            <Link
+              to={`/product/${product._id}`}
+              className="action-btn view-details"
+            >
+              View Details
+            </Link>
+          </div>
         </div>
       </div>
     </div>

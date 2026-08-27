@@ -13,7 +13,7 @@ const Shop = () => {
       try {
         const res = await fetch('/api/products');
         const data = await res.json();
-        setProducts(Array.isArray(data) ? data : []);
+        setProducts(Array.isArray(data) ? data : data.products || []);
       } catch (error) {
         console.error(error);
       } finally {
@@ -37,7 +37,10 @@ const Shop = () => {
 
   return (
     <div className="shop-container">
-      <h2>All Products</h2>
+      <div className="page-hero-card">
+        <h2>All Products</h2>
+        <p>Browse our premium collection of products.</p>
+      </div>
       <input
         type="text"
         placeholder="Search products..."

@@ -36,7 +36,9 @@ const ProductCard = ({ product }) => {
           <div className="product-rating">
             <span className="rating-star">★</span> {product.ratings?.toFixed(1) || "0.0"}
           </div>
-          {getAvailabilityBadge()}
+          <div className="stock-badge-container">
+            {getAvailabilityBadge()}
+          </div>
         </div>
         <div className="product-bottom">
           <p className="product-price">₹{product.price}</p>

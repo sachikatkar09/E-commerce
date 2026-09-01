@@ -1,8 +1,17 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import { useWishlist } from "../context/WishlistContext";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../redux/cartSlice";
 import "../styles/product.css";
 
 const ProductCard = ({ product }) => {
+  const { user } = useContext(AuthContext);
+  const { toggleWishlist, isWishlisted } = useWishlist();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const getAvailabilityBadge = () => {
     if (product.stock > 10)
       return <span className="product-stock-badge in-stock">In Stock</span>;
@@ -19,11 +28,41 @@ const ProductCard = ({ product }) => {
     return null;
   };
 
+  const handleAddToCart = (e) => {
+    e.stopPropagation();
+    if (!user) {
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
+    dispatch(addToCart({
+      productId: product._id,
+      name: product.name,
+      price: product.price,
+      imageUrl: product.imageUrl,
+      qty: 1
+    }));
+  };
+
+  const handleWishlistToggle = (e) => {
+    e.stopPropagation();
+    if (!user) {
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
+    toggleWishlist(product);
+  };
+
   return (
     <div className="product-card">
       <div className="product-image-container">
         {getPopularBadge()}
-        <button className="product-wishlist-btn">♡</button>
+          <button 
+            className="product-wishlist-btn"
+            onClick={handleWishlistToggle}
+            style={{ color: isWishlisted(product._id) ? 'red' : 'inherit' }}
+          >
+          ♡
+        </button>
         <img
           src={product.imageUrl}
           alt={product.name}
@@ -42,17 +81,17 @@ const ProductCard = ({ product }) => {
         </div>
         <div className="product-bottom">
           <p className="product-price">₹{product.price}</p>
-          <div className="button-container">
-            <button className="action-btn add-to-cart">
-              <span className="btn-icon">🛒</span> Add to Cart
-            </button>
-            <Link
-              to={`/product/${product._id}`}
-              className="action-btn view-details"
-            >
-              View Details
-            </Link>
-          </div>
+           <div className="button-container">
+             <button className="action-btn add-to-cart" onClick={handleAddToCart}>
+               <span className="btn-icon">🛒</span> Add to Cart
+             </button>
+             <Link
+               to={`/product/${product._id}`}
+               className="action-btn view-details"
+             >
+               View Details
+             </Link>
+           </div>
         </div>
       </div>
     </div>

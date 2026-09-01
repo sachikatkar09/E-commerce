@@ -1,11 +1,20 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { useWishlist } from '../context/WishlistContext';
+import { AuthContext } from '../context/AuthContext';
 import '../styles/product.css';
 
 const Wishlist = () => {
+  const { user } = useContext(AuthContext);
   const { wishlistItems } = useWishlist();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login', { state: { from: '/wishlist' } });
+    }
+  }, [user, navigate]);
 
   return (
     <div className="shop-container">

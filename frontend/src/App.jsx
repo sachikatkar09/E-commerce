@@ -23,6 +23,7 @@ import AdminUsers from './admin/AdminUsers';
 import Wishlist from './pages/Wishlist';
 import Categories from './pages/Categories';
 import Deals from './pages/Deals';
+import ProtectedRoute from './components/ProtectedRoute';
 import { SearchProvider } from './context/SearchContext';
 import Chatbot from './components/Chatbot';
 import ChatbotButton from './components/ChatbotButton';
@@ -39,16 +40,16 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/shop" element={<Shop />} />
-            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/categories/:category" element={<Categories />} />
             <Route path="/deals" element={<Deals />} />
             <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+            <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/ordersuccess" element={<OrderSuccess />} />
             <Route path="/about" element={<About />} />
             <Route path="/disclaimer" element={<Disclaimer />} />

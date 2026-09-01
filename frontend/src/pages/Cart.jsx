@@ -1,13 +1,21 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { removeFromCart, addToCart } from '../redux/cartSlice';
+import { AuthContext } from '../context/AuthContext';
 import '../styles/cart.css';
 
 const Cart = () => {
+  const { user } = useContext(AuthContext);
   const cartItems = useSelector((state) => state.cart.cartItems);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login', { state: { from: '/cart' } });
+    }
+  }, [user, navigate]);
 
   const handleRemove = (id) => {
     dispatch(removeFromCart(id));

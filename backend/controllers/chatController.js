@@ -26,6 +26,7 @@ exports.chat = async (req, res) => {
         imageUrl: product.imageUrl,
         category: product.category,
         stock: product.stock,
+        ratings: product.ratings || 0,
       })),
     });
   } catch (error) {

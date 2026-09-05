@@ -1,9 +1,4 @@
 const mongoose = require("mongoose");
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-require("dotenv").config();
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const EMBEDDING_MODEL = process.env.GEMINI_EMBEDDING_MODEL || "text-embedding-004";
 
 const productSchema = new mongoose.Schema(
   {

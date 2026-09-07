@@ -12,20 +12,9 @@ const GREETING_PATTERNS =
 const isGreeting = (query) => GREETING_PATTERNS.test(query.trim());
 
 const KNOWN_CATEGORIES = [
-  "electronics",
-  "fashion",
-  "furniture",
-  "clothing",
-  "books",
-  "beauty",
-  "toys",
-  "sports",
-  "grocery",
-  "home",
-  "accessories",
-  "shoes",
-  "shoe",
-  "footwear",
+  "electronics", "fashion", "furniture", "clothing", "books",
+  "beauty", "toys", "sports", "grocery", "home", "accessories",
+  "shoes", "shoe", "footwear",
 ];
 
 const COLOR_WORDS = [
@@ -136,25 +125,90 @@ const parseQuery = (rawQuery) => {
   }
 
   if (
-    lower.includes("price") ||
-    lower.includes("cost") ||
-    lower.includes("₹") ||
-    lower.includes("rs") ||
-    lower.includes("rupee")
+    lower.includes("price") || lower.includes("cost") ||
+    lower.includes("₹") || lower.includes("rs") || lower.includes("rupee")
   ) {
     result.isProductQuery = true;
   }
 
   if (
-    lower.includes("available") ||
-    lower.includes("stock") ||
-    lower.includes("in stock") ||
-    lower.includes("out of stock")
+    lower.includes("available") || lower.includes("stock") ||
+    lower.includes("in stock") || lower.includes("out of stock")
   ) {
     result.isProductQuery = true;
   }
 
   return result;
+};
+
+const searchByProductName = async (query) => {
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  try {
+    const exactMatch = await Product.findOne({
+      name: { $regex: `^${escaped}$`, $options: "i" },
+    });
+    if (exactMatch) {
+      console.log("[RAG] Exact name match:", exactMatch.name);
+      return [exactMatch];
+    }
+  } catch (e) {
+    console.error("[RAG] Exact name search error:", e.message);
+  }
+
+  try {
+    const partialMatches = await Product.find({
+      name: { $regex: escaped, $options: "i" },
+    }).limit(5);
+    if (partialMatches.length > 0) {
+      console.log("[RAG] Partial name matches:", partialMatches.map((p) => p.name));
+      return partialMatches;
+    }
+  } catch (e) {
+    console.error("[RAG] Partial name search error:", e.message);
+  }
+
+  try {
+    const queryWords = query
+      .toLowerCase()
+      .replace(/[?!.,;:'"()₹$]/g, " ")
+      .split(/\s+/)
+      .filter((w) => w.length > 2);
+
+    if (queryWords.length > 0) {
+      const allProducts = await Product.find({});
+      const scored = allProducts.map((product) => {
+        const nameLower = product.name.toLowerCase();
+        const descLower = (product.description || "").toLowerCase();
+        const combined = `${nameLower} ${descLower}`;
+        const matchCount = queryWords.filter((w) => combined.includes(w)).length;
+        const nameMatchCount = queryWords.filter((w) => nameLower.includes(w)).length;
+        return { product, matchCount, nameMatchCount };
+      });
+
+      scored.sort((a, b) => {
+        if (b.nameMatchCount !== a.nameMatchCount) return b.nameMatchCount - a.nameMatchCount;
+        return b.matchCount - a.matchCount;
+      });
+
+      const minRequired = Math.max(1, Math.ceil(queryWords.length * 0.5));
+      const relevant = scored.filter(
+        (s) => s.matchCount >= minRequired,
+      );
+
+      if (relevant.length > 0) {
+        console.log(
+          "[RAG] Word-overlap matches:",
+          relevant.map((r) => `${r.product.name} (score: ${r.matchCount}/${queryWords.length})`),
+        );
+        return relevant.map((r) => r.product);
+      }
+    }
+  } catch (e) {
+    console.error("[RAG] Word-overlap search error:", e.message);
+  }
+
+  return [];
 };
 
 const buildMongoFilter = (parsed) => {
@@ -201,6 +255,17 @@ const buildMongoFilter = (parsed) => {
   return filter;
 };
 
+const searchWithMongoFilters = async (parsed) => {
+  try {
+    const filter = buildMongoFilter(parsed);
+    if (Object.keys(filter).length === 0) return [];
+    return await Product.find(filter).limit(8);
+  } catch (error) {
+    console.error("[RAG] Mongo filter search failed:", error.message);
+    return [];
+  }
+};
+
 const searchWithPinecone = async (query, parsed) => {
   try {
     const queryEmbedding = await generateEmbedding(query);
@@ -225,10 +290,16 @@ const searchWithPinecone = async (query, parsed) => {
 
     const results = await namespace.query(queryOptions);
 
-    const minScore = parsed.keywords.length > 0 ? 0.3 : 0.45;
+    const minScore = 0.75;
     const matchedIds = results.matches
       .filter((m) => m.score >= minScore)
       .map((m) => m.id);
+
+    console.log(
+      "[RAG] Pinecone scores:",
+      results.matches.slice(0, 5).map((m) => `${m.id.slice(-6)}:${m.score.toFixed(3)}`),
+      `| threshold: ${minScore} | passed: ${matchedIds.length}`,
+    );
 
     if (matchedIds.length > 0) {
       return await Product.find({ _id: { $in: matchedIds } });
@@ -237,17 +308,6 @@ const searchWithPinecone = async (query, parsed) => {
   } catch (error) {
     console.error("[RAG] Pinecone search failed:", error.message);
     return null;
-  }
-};
-
-const searchWithMongoFilters = async (parsed) => {
-  try {
-    const filter = buildMongoFilter(parsed);
-    if (Object.keys(filter).length === 0) return [];
-    return await Product.find(filter).limit(8);
-  } catch (error) {
-    console.error("[RAG] Mongo filter search failed:", error.message);
-    return [];
   }
 };
 
@@ -332,6 +392,24 @@ const searchProducts = async (query, conversationHistory) => {
     }
   }
 
+  const nameResults = await searchByProductName(trimmedQuery);
+  if (nameResults.length > 0) {
+    let filtered = nameResults;
+    if (parsed.colors.length > 0) {
+      filtered = nameResults.filter((p) => {
+        const text = `${p.name} ${p.description}`.toLowerCase();
+        return parsed.colors.some((c) => text.includes(c));
+      });
+      if (filtered.length === 0) filtered = nameResults;
+    }
+    if (parsed.maxPrice) {
+      const priceFiltered = filtered.filter((p) => p.price <= parsed.maxPrice);
+      if (priceFiltered.length > 0) filtered = priceFiltered;
+    }
+    console.log("[RAG] Name search returned:", filtered.length, "products");
+    return filtered;
+  }
+
   let products = await searchWithPinecone(trimmedQuery, parsed);
   console.log("[RAG] Pinecone results:", products === null ? "FAILED" : products.length);
 
@@ -374,13 +452,22 @@ const generateAIResponse = async (query, products, conversationHistory) => {
   }
 
   if (products.length === 0) {
+    const searchTerm = trimmedQuery
+      .replace(/\b(show|me|the|a|an|some|any|i|want|to|buy|find|get|need|looking|for|of|with|and|or|do|you|have|is|are|can|could|would|should|will|please|recommend|suggest|give|tell|list|best|cheap|good|great|really|very|just|about|from|product|products|item|items|available|stock|under|below|less|than|max|budget|price|how|much)\b/gi, "")
+      .replace(/[?!.,;:'"()₹$]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
     const hints = [];
     if (parsed.category) hints.push(`category "${parsed.category}"`);
-    if (parsed.colors.length > 0)
-      hints.push(`color "${parsed.colors.join(", ")}"`);
+    if (parsed.colors.length > 0) hints.push(`color "${parsed.colors.join(", ")}"`);
     if (parsed.maxPrice) hints.push(`price under ₹${parsed.maxPrice}`);
-    const hintStr =
-      hints.length > 0 ? ` (looking for ${hints.join(", ")})` : "";
+    const hintStr = hints.length > 0 ? ` (looking for ${hints.join(", ")})` : "";
+
+    if (searchTerm.length > 2) {
+      return `Sorry, "${searchTerm}" is currently unavailable in our store.${hintStr} Would you like me to show you similar products?`;
+    }
+
     return `Sorry, I couldn't find any products matching your request${hintStr}. Try adjusting your search or browse our Shop page for all available items.`;
   }
 
@@ -401,27 +488,28 @@ const generateAIResponse = async (query, products, conversationHistory) => {
       : "";
 
   const systemPrompt = `You are an AI shopping assistant for ShopNest, an e-commerce store.
-Your job is to help users find products based on their queries.
 
-RULES:
-1. Answer using ONLY the products provided in the context below.
-2. If products match the query, list ONLY those products with name, price, and a brief description.
-3. If NO products match, say: "Sorry, I couldn't find products matching your requirements."
-4. NEVER invent products, prices, discounts, or features not in the provided context.
-5. NEVER show products that don't match the user's query just to fill the response.
-6. If the user asks about a color, only show products that mention that color.
-7. If the user asks about a price range, only show products within that range.
-8. Keep responses concise. Use ₹ for prices.
-9. You can reference earlier conversation to understand follow-up questions like "show pink ones" (meaning pink version of previously discussed items).`;
+CRITICAL RULES:
+1. Answer using ONLY the products provided in the context below. MongoDB is the source of truth.
+2. NEVER invent products, prices, discounts, stock, specifications, or availability.
+3. If a specific product is requested and it is in the context, show ONLY that product.
+4. If a specific product is requested but NOT in the context, say it is unavailable. Do NOT show unrelated products as substitutes.
+5. If products match the query, list them with name, price, stock status, and brief description.
+6. For out-of-stock products, mention they are currently out of stock.
+7. Keep responses concise. Use ₹ for prices.
+8. You can reference earlier conversation to understand follow-up questions.`;
 
   try {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey || apiKey === "YOUR_GEMINI_API_KEY_HERE") {
       console.warn("[RAG] Gemini API key not configured, using fallback response");
       const list = products
-        .map((p) => `• ${p.name} - ₹${p.price} (${p.category})`)
+        .map((p) => {
+          const stockStatus = p.stock > 0 ? `In Stock (${p.stock})` : "Out of Stock";
+          return `• ${p.name} - ₹${p.price} (${p.category}) [${stockStatus}]`;
+        })
         .join("\n");
-      return `Here are some products I found:\n\n${list}\n\nFor AI-powered descriptions, please configure a valid Gemini API key.`;
+      return `Here are the products I found:\n\n${list}`;
     }
 
     const model = genAI.getGenerativeModel({
@@ -442,9 +530,12 @@ RULES:
     console.error("[RAG] LLM error:", error.message);
     if (products.length > 0) {
       const list = products
-        .map((p) => `• ${p.name} - ₹${p.price} (${p.category})`)
+        .map((p) => {
+          const stockStatus = p.stock > 0 ? `In Stock (${p.stock})` : "Out of Stock";
+          return `• ${p.name} - ₹${p.price} [${stockStatus}]`;
+        })
         .join("\n");
-      return `Here are some products that match your query:\n\n${list}`;
+      return `Here are the products that match your query:\n\n${list}`;
     }
     return "Sorry, I'm unable to process your request right now. Please try again.";
   }

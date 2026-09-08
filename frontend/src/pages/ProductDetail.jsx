@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useEffect, useState, useContext } from 'react';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../redux/cartSlice';
+import { AuthContext } from '../context/AuthContext';
+import { useWishlist } from '../context/WishlistContext';
 import ReviewSection from '../components/ReviewSection';
 import '../styles/product.css';
 
@@ -10,6 +12,10 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
+  const { user } = useContext(AuthContext);
+  const { toggleWishlist, isWishlisted } = useWishlist();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -27,6 +33,10 @@ const ProductDetail = () => {
   }, [id]);
 
   const handleAddToCart = () => {
+    if (!user) {
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
     if (product) {
       dispatch(addToCart({
         productId: product._id,
@@ -37,6 +47,14 @@ const ProductDetail = () => {
       }));
       alert('Successfully added to your cart!');
     }
+  };
+
+  const handleWishlistToggle = () => {
+    if (!user) {
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
+    toggleWishlist(product);
   };
 
   if (loading) return <div style={{ textAlign: 'center', margin: '100px', color: '#f97316' }}>Loading Product...</div>;
@@ -69,12 +87,19 @@ const ProductDetail = () => {
             <p style={{ color: '#a1a1aa', lineHeight: '1.8' }}>{product.description}</p>
           </div>
 
-          {/* Cart & Stock Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <button onClick={handleAddToCart} className="btn" style={{ flexGrow: '1', padding: '18px', fontSize: '1.2rem' }}>
-              Add to Shopping Cart
-            </button>
-          </div>
+           {/* Cart & Stock Actions */}
+           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+             <button onClick={handleAddToCart} className="btn" style={{ flexGrow: '1', padding: '18px', fontSize: '1.2rem' }}>
+               Add to Shopping Cart
+             </button>
+              <button 
+                onClick={handleWishlistToggle}
+                className="btn"
+                style={{ padding: '18px', fontSize: '1.2rem', background: isWishlisted(product?._id) ? '#ef4444' : '#6b7280' }}
+              >
+               {isWishlisted(product?._id) ? '❤️ Remove from Wishlist' : '♡ Add to Wishlist'}
+             </button>
+           </div>
           
           <p style={{ marginTop: '20px', color: product.stock > 0 ? '#10b981' : '#ef4444', fontWeight: '600' }}>
             {product.stock > 0 ? `● In Stock (${product.stock} units available)` : `● Temporarily Out of Stock`}

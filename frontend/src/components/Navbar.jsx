@@ -120,18 +120,22 @@ const Navbar = () => {
           </div>
         </div>
 
-        <Link
-          to="/wishlist"
-          className="icon-button cart-button"
-          aria-label="Wishlist"
-        >
-          ❤️
-          <span className="cart-count">{wishlistCount}</span>
-        </Link>
-        <Link to="/cart" className="icon-button cart-button" aria-label="Cart">
-          🛒
-          <span className="cart-count">{cartItems.length}</span>
-        </Link>
+         {user && (
+           <Link
+             to="/wishlist"
+             className="icon-button cart-button"
+             aria-label="Wishlist"
+           >
+             ❤️
+             <span className="cart-count">{wishlistCount}</span>
+           </Link>
+         )}
+         {user && (
+           <Link to="/cart" className="icon-button cart-button" aria-label="Cart">
+             🛒
+             <span className="cart-count">{cartItems.length}</span>
+           </Link>
+         )}
         {user ? (
           <>
             <Link to="/profile" className="profile-link">

@@ -864,7 +864,11 @@
   justify-content: space-between;
   width: 100%;
   min-height: 24px;
-  margin-bottom: 8px;
+}
+
+.stock-badge-container {
+  display: flex;
+  align-items: center;
 }
 
 .product-rating {
